@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Cache buster: unregisters stale service workers -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(r) { r.forEach(function(reg){reg.unregister();}); });
+      caches.keys().then(function(keys) { keys.forEach(function(k){ caches.delete(k); }); });
+    }
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#0d0d14" />
+  <title>NELSON AI</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0d14'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0' stop-color='%2300d4ff'/%3E%3Cstop offset='1' stop-color='%23a855f7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='32' y='44' font-size='40' font-family='Arial Black,Arial' fill='url(%23g)' text-anchor='middle' font-weight='900'%3EN%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Montserrat:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" id="hljs-theme-link" />
+  <link rel="stylesheet" href="nelson.css" />
+  <script src="https://js.puter.com/v2/"></script>
+  <!-- Google Sign-In (GSI) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body class="theme-dark">
+
+<!-- WELCOME VISUALIZER -->
+<div id="welcomeVisualizer" class="welcome-viz hidden">
+  <div class="wv-bg">
+    <div class="wv-blob b1"></div>
+    <div class="wv-blob b2"></div>
+    <div class="wv-blob b3"></div>
+  </div>
+  <div class="wv-content">
+    <div class="wv-logo-orb">
+      <svg viewBox="0 0 80 80" width="80" height="80"><rect width="80" height="80" rx="20" fill="#0d0d14"/><defs><linearGradient id="wvg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#00d4ff"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs><text x="40" y="56" font-size="52" font-family="Arial Black,Arial" fill="url(#wvg)" text-anchor="middle" font-weight="900">N</text></svg>
+      <div class="wv-rings">
+        <div class="wv-ring r1"></div>
+        <div class="wv-ring r2"></div>
+        <div class="wv-ring r3"></div>
+      </div>
+    </div>
+    <div class="wv-welcome-text">Welcome to</div>
+    <div class="wv-brand">NELSON AI</div>
+    <div id="wvUserName" class="wv-user"></div>
+    <div class="wv-bars">
+      <div class="wv-bar"></div><div class="wv-bar"></div><div class="wv-bar"></div>
+      <div class="wv-bar"></div><div class="wv-bar"></div><div class="wv-bar"></div>
+      <div class="wv-bar"></div><div class="wv-bar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-orb">
+        <svg viewBox="0 0 64 64" width="52" height="52"><rect width="64" height="64" rx="16" fill="#0d0d14"/><defs><linearGradient id="llg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#00d4ff"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs><text x="32" y="44" font-size="40" font-family="Arial Black,Arial" fill="url(#llg)" text-anchor="middle" font-weight="900">N</text></svg>
+      </div>
+      <div class="login-logo-text">
+        <span class="login-brand">NELSON AI</span>
+        <span class="login-tagline">by Nelson Company</span>
+      </div>
+    </div>
+
+    <div class="login-tabs">
+      <button class="login-tab active" id="tabSignIn" onclick="switchLoginTab('signin')">Sign In</button>
+      <button class="login-tab" id="tabRegister" onclick="switchLoginTab('register')">Register</button>
+    </div>
+
+    <div class="social-btns">
+      <!-- Real Google Sign-In button (only shown on localhost/https) -->
+      <div id="googleSignInWrapper">
+        <div id="g_id_onload"
+          data-client_id="988800478209-d7ac1vm01n2dkf64q307j0kfvombesks.apps.googleusercontent.com"
+          data-callback="handleGoogleCredential"
+          data-auto_prompt="false">
+        </div>
+        <!-- GSI rendered button (shown when GSI library loads) -->
+        <div id="gsiRenderedBtn" class="g_id_signin"
+          data-type="standard"
+          data-shape="rectangular"
+          data-theme="filled_black"
+          data-text="continue_with"
+          data-size="large"
+          data-logo_alignment="left"
+          data-width="320"
+          style="display:none;">
+        </div>
+        <!-- Custom fallback Google button (always visible) -->
+        <button id="customGoogleBtn" class="social-btn google-btn" onclick="triggerGoogleSignIn()" style="width:100%;justify-content:center;gap:10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+        <div id="googleFileNotice" style="display:none;font-size:11px;color:#94a3b8;text-align:center;margin-top:4px;">
+          ⚠️ Open via <b>localhost:7700</b> or https:// to use Google Sign-In
+        </div>
+      </div>
+      <button class="social-btn github-btn" onclick="socialLogin('GitHub')" style="width:100%;justify-content:center;gap:10px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 .5C5.78.5 0 6.28 0 12.79c0 5.23 3.44 9.67 8.21 11.23.6.11.82-.26.82-.58 0-.28-.01-1.04-.01-2.04-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.48 5.92.42.36.81 1.1.81 2.22 0 1.6-.01 2.9-.01 3.29 0 .31.21.69.82.57C20.56 22.46 24 17.95 24 12.79 24 6.28 18.63.5 12 .5z"/></svg>
+        Continue with GitHub
+      </button>
+    </div>
+    <!-- Google Drive sync status bar (shown after Google login) -->
+    <div id="driveStatusBar" style="display:none;align-items:center;gap:8px;background:rgba(0,212,255,0.07);border:1px solid rgba(0,212,255,0.2);border-radius:10px;padding:8px 12px;margin-top:8px;font-size:12px;color:#94a3b8;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <span id="driveStatusText">Connecting to Google Drive…</span>
+    </div>
+
+    <div class="login-divider"><span></span><em>or use email</em><span></span></div>
+
+    <!-- Sign In form -->
+    <form id="loginForm" onsubmit="handleLogin(event)" autocomplete="on" novalidate>
+      <div class="login-field">
+        <label for="loginEmail">Email address</label>
+        <input type="email" id="loginEmail" name="email" placeholder="your@email.com" autocomplete="email" required />
+      </div>
+      <div class="login-field">
+        <label for="loginPassword">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="loginPassword" name="password" placeholder="••••••••" autocomplete="current-password" required />
+          <button type="button" class="pw-toggle" onclick="togglePw('loginPassword','pwEyeOpen','pwEyeClosed')" tabindex="-1">
+            <svg id="pwEyeOpen" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="pwEyeClosed" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="login-remember-row">
+        <label class="remember-label"><input type="checkbox" id="rememberMe" /> Remember me</label>
+        <button type="button" class="forgot-link" onclick="showForgotPw()">Forgot password?</button>
+      </div>
+      <div id="loginError" class="login-error" style="display:none">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="loginErrorText">Invalid email or password.</span>
+      </div>
+      <button type="submit" class="login-submit-btn" id="loginSubmitBtn">
+        <span id="loginBtnText">Sign In</span>
+        <svg id="loginBtnSpinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:none" class="spin"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      </button>
+    </form>
+
+    <!-- Register form -->
+    <form id="registerForm" onsubmit="handleRegister(event)" autocomplete="on" novalidate style="display:none">
+      <div class="login-field">
+        <label for="regName">Display name</label>
+        <input type="text" id="regName" name="name" placeholder="Your Name" autocomplete="name" required />
+      </div>
+      <div class="login-field">
+        <label for="regEmail">Email address</label>
+        <input type="email" id="regEmail" name="email" placeholder="your@email.com" autocomplete="email" required />
+      </div>
+      <div class="login-field">
+        <label for="regPassword">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="regPassword" name="password" placeholder="Min 6 characters" autocomplete="new-password" required />
+          <button type="button" class="pw-toggle" onclick="togglePw('regPassword','regEyeOpen','regEyeClosed')" tabindex="-1">
+            <svg id="regEyeOpen" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="regEyeClosed" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="regError" class="login-error" style="display:none">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="regErrorText">Registration error.</span>
+      </div>
+      <button type="submit" class="login-submit-btn" id="regSubmitBtn">
+        <span id="regBtnText">Create Account</span>
+        <svg id="regBtnSpinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:none" class="spin"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      </button>
+    </form>
+
+    <p class="login-footer">NELSON AI · Nelson Company · Uganda · 2026</p>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+  <div class="sidebar-header">
+    <span class="sidebar-logo">
+      <svg width="26" height="26" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#0d0d14"/><defs><linearGradient id="ng" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#00d4ff"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs><text x="32" y="44" font-size="40" font-family="Arial Black,Arial" fill="url(#ng)" text-anchor="middle" font-weight="900">N</text></svg>
+      NELSON AI
+    </span>
+    <button class="icon-btn" onclick="toggleSidebar(false)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div class="sidebar-user-row" id="sidebarUserRow">
+    <div class="sidebar-user-avatar" id="sidebarAvatar">U</div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-user-name" id="sidebarUserName">User</div>
+      <div class="sidebar-user-email" id="sidebarUserEmail">user@email.com</div>
+      <div id="driveSyncStatus" style="display:none;font-size:10px;color:#00d4ff;margin-top:2px;">
+        ☁️ <span id="driveSyncText">Drive synced</span>
+      </div>
+    </div>
+    <button class="icon-btn" onclick="handleLogout()" title="Sign out" style="margin-left:auto;flex-shrink:0">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+
+  <div class="sidebar-section-label">AI MODEL</div>
+  <div id="modelButtons" class="model-buttons"></div>
+
+  <div class="sidebar-section-label">THEME</div>
+  <div class="theme-buttons">
+    <button class="theme-btn active" data-theme="theme-dark" onclick="setTheme('theme-dark',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Dark</button>
+    <button class="theme-btn" data-theme="theme-light" onclick="setTheme('theme-light',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg> Light</button>
+    <button class="theme-btn" data-theme="theme-purple" onclick="setTheme('theme-purple',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="#c084fc"><circle cx="12" cy="12" r="10"/></svg> Purple</button>
+    <button class="theme-btn" data-theme="theme-ocean" onclick="setTheme('theme-ocean',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="#38bdf8"><circle cx="12" cy="12" r="10"/></svg> Ocean</button>
+    <button class="theme-btn" data-theme="theme-forest" onclick="setTheme('theme-forest',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="#4ade80"><circle cx="12" cy="12" r="10"/></svg> Forest</button>
+    <button class="theme-btn" data-theme="theme-sunset" onclick="setTheme('theme-sunset',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fb923c"><circle cx="12" cy="12" r="10"/></svg> Sunset</button>
+    <button class="theme-btn" data-theme="theme-neon" onclick="setTheme('theme-neon',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="#39ff14"><circle cx="12" cy="12" r="10"/></svg> Neon</button>
+    <button class="theme-btn" data-theme="theme-rose" onclick="setTheme('theme-rose',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fb7185"><circle cx="12" cy="12" r="10"/></svg> Rose</button>
+    <button class="theme-btn" data-theme="theme-midnight" onclick="setTheme('theme-midnight',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="#818cf8"><circle cx="12" cy="12" r="10"/></svg> Midnight</button>
+    <button class="theme-btn" data-theme="theme-amber" onclick="setTheme('theme-amber',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><circle cx="12" cy="12" r="10"/></svg> Amber</button>
+    <button class="theme-btn" data-theme="theme-slate" onclick="setTheme('theme-slate',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="#94a3b8"><circle cx="12" cy="12" r="10"/></svg> Slate</button>
+    <button class="theme-btn" data-theme="theme-cyberpunk" onclick="setTheme('theme-cyberpunk',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="#f0e040"><circle cx="12" cy="12" r="10"/></svg> Cyber</button>
+  </div>
+
+  <div class="sidebar-section-label">FONT SIZE</div>
+  <div class="slider-row">
+    <span style="font-size:11px">A</span>
+    <input type="range" min="12" max="24" value="16" id="fontSizeSlider" oninput="setFontSize(this.value)" />
+    <span style="font-size:19px">A</span>
+  </div>
+
+  <div class="sidebar-section-label">TEXT STYLE</div>
+  <div class="style-buttons">
+    <button class="style-btn active" onclick="setFontStyle('inter',this)">Inter</button>
+    <button class="style-btn" onclick="setFontStyle('poppins',this)" style="font-family:'Poppins',sans-serif">Poppins</button>
+    <button class="style-btn" onclick="setFontStyle('roboto',this)" style="font-family:'Roboto',sans-serif">Roboto</button>
+    <button class="style-btn" onclick="setFontStyle('montserrat',this)" style="font-family:'Montserrat',sans-serif">Montserrat</button>
+    <button class="style-btn" onclick="setFontStyle('mono',this)" style="font-family:monospace">Mono</button>
+    <button class="style-btn" onclick="setFontStyle('serif',this)" style="font-family:serif">Serif</button>
+    <button class="style-btn" onclick="setFontStyle('space',this)" style="font-family:'Space Grotesk',sans-serif">Space</button>
+    <button class="style-btn" onclick="setFontStyle('bold',this)" style="font-weight:800">Bold</button>
+  </div>
+
+  <div class="sidebar-section-label">TEXT COLOR</div>
+  <div class="color-row">
+    <input type="color" id="textColorPicker" value="#e0e0f0" oninput="setTextColor(this.value)" />
+    <span id="colorLabel">#e0e0f0</span>
+    <button class="style-btn" style="margin-left:auto" onclick="resetTextColor()">Reset</button>
+  </div>
+
+  <div class="sidebar-section-label">CHAT BACKGROUND</div>
+  <div class="watermark-options">
+    <button class="wm-btn active" data-wm="none" onclick="setWatermark('none',this)">None</button>
+    <button class="wm-btn" data-wm="grid" onclick="setWatermark('grid',this)">Grid</button>
+    <button class="wm-btn" data-wm="dots" onclick="setWatermark('dots',this)">Dots</button>
+    <button class="wm-btn" data-wm="circuit" onclick="setWatermark('circuit',this)">Circuit</button>
+    <button class="wm-btn" data-wm="stars" onclick="setWatermark('stars',this)">Stars</button>
+    <button class="wm-btn" data-wm="waves" onclick="setWatermark('waves',this)">Waves</button>
+    <button class="wm-btn" data-wm="hexagon" onclick="setWatermark('hexagon',this)">Hexagon</button>
+    <button class="wm-btn" data-wm="diagonal" onclick="setWatermark('diagonal',this)">Lines</button>
+    <button class="wm-btn" data-wm="crosshatch" onclick="setWatermark('crosshatch',this)">Crosshatch</button>
+  </div>
+
+  <div class="sidebar-section-label">BACKGROUND IMAGE</div>
+  <div class="bg-image-panel">
+    <button class="bg-upload-btn" onclick="document.getElementById('bgImageInput').click()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Upload Image
+    </button>
+    <input type="file" id="bgImageInput" accept="image/*" style="display:none" onchange="handleBgImageUpload(this)" />
+    <div id="bgImagePreview" class="bg-image-preview" style="display:none">
+      <img id="bgImageThumb" src="" alt="" />
+      <button class="bg-remove-btn" onclick="removeBgImage()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="bgSliders" style="display:none">
+      <div class="bg-slider-item">
+        <span class="bg-slider-label">Opacity</span>
+        <input type="range" min="0" max="100" value="30" id="bgOpacitySlider" oninput="updateBgOverlay()" class="bg-range" />
+        <span id="bgOpacityVal">30%</span>
+      </div>
+      <div class="bg-slider-item">
+        <span class="bg-slider-label">Brightness</span>
+        <input type="range" min="10" max="200" value="100" id="bgBrightnessSlider" oninput="updateBgOverlay()" class="bg-range" />
+        <span id="bgBrightnessVal">100%</span>
+      </div>
+      <div class="bg-slider-item">
+        <span class="bg-slider-label">Blur</span>
+        <input type="range" min="0" max="20" value="0" id="bgBlurSlider" oninput="updateBgOverlay()" class="bg-range" />
+        <span id="bgBlurVal">0px</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-section-label">CODE SETTINGS</div>
+  <div class="code-settings-panel">
+    <label class="vsetting-label">Syntax Theme</label>
+    <select id="codeThemeSelect" class="voice-select" onchange="setCodeTheme(this.value)">
+      <option value="atom-one-dark">Atom One Dark</option>
+      <option value="github-dark">GitHub Dark</option>
+      <option value="monokai">Monokai</option>
+      <option value="dracula">Dracula</option>
+      <option value="tokyo-night-dark">Tokyo Night</option>
+      <option value="night-owl">Night Owl</option>
+      <option value="vs2015">VS 2015</option>
+      <option value="solarized-dark">Solarized Dark</option>
+      <option value="github">GitHub Light</option>
+      <option value="xcode">Xcode Light</option>
+    </select>
+    <label class="vsetting-label" style="margin-top:8px">Line Wrap</label>
+    <div class="code-wrap-btns">
+      <button class="vg-btn active" id="codeWrapOff" onclick="setCodeWrap(false,this)">No Wrap</button>
+      <button class="vg-btn" id="codeWrapOn" onclick="setCodeWrap(true,this)">Wrap</button>
+    </div>
+    <div class="code-preview-block">
+      <div class="code-preview-label">Preview</div>
+      <pre id="codePreviewPre"><code class="language-javascript" id="codePreviewCode">function greet(name) {
+  return `Hello, ${name}!`;
+}
+console.log(greet("NELSON AI"));</code></pre>
+    </div>
+  </div>
+
+  <div class="sidebar-section-label">VOICE SETTINGS</div>
+  <div class="voice-settings-panel">
+    <label class="vsetting-label">AI Voice (tap preview)</label>
+    <div id="voicePreviewList" class="voice-preview-list">
+      <div class="vpl-loading">Loading voices…</div>
+    </div>
+    <label class="vsetting-label" style="margin-top:10px">Pitch</label>
+    <div class="slider-row">
+      <span style="font-size:11px">Low</span>
+      <input type="range" min="0.5" max="2" step="0.05" value="1" id="pitchSlider" oninput="setPitch(this.value)" />
+      <span id="pitchVal">1.0</span>
+    </div>
+    <label class="vsetting-label">Speed</label>
+    <div class="slider-row">
+      <span style="font-size:11px">Slow</span>
+      <input type="range" min="0.5" max="2" step="0.05" value="1" id="rateSlider" oninput="setRate(this.value)" />
+      <span id="rateVal">1.0</span>
+    </div>
+  </div>
+
+  <div class="sidebar-divider"></div>
+
+  <button class="sidebar-nav-btn" onclick="showAboutUs()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    About Us
+  </button>
+  <button class="sidebar-nav-btn" onclick="showAboutAI()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><circle cx="12" cy="10" r="3"/></svg>
+    About NELSON AI
+  </button>
+  <button class="sidebar-nav-btn" onclick="clearConversations()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+    Clear Chat
+  </button>
+  <button class="sidebar-nav-btn adv-settings-btn" onclick="openAdvancedSettings()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>
+    Advanced Settings
+  </button>
+  <button class="sidebar-nav-btn" onclick="handleLogout()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    Sign Out
+  </button>
+</div>
+
+<!-- MAIN WRAPPER -->
+<div id="mainWrapper" class="main-wrapper">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <button class="icon-btn" onclick="toggleSidebar()" title="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="topbar-center">
+      <div class="topbar-avatar-wrap">
+        <svg viewBox="0 0 64 64" width="36" height="36"><rect width="64" height="64" rx="14" fill="#0d0d14"/><defs><linearGradient id="tg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#00d4ff"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs><text x="32" y="44" font-size="40" font-family="Arial Black,Arial" fill="url(#tg)" text-anchor="middle" font-weight="900">N</text></svg>
+      </div>
+      <div class="topbar-info">
+        <span class="topbar-name">NELSON AI</span>
+        <span class="topbar-status"><span class="status-dot"></span> Online</span>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" onclick="openRecentChats()" title="Recent Chats">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </button>
+      <button class="icon-btn" onclick="newChat()" title="New Chat">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <button class="icon-btn" onclick="openVoiceCall()" title="Voice Chat">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.58 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l1.02-1.02a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- MODEL BADGE -->
+  <div id="currentModelBadge" class="model-badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><circle cx="12" cy="10" r="3"/></svg>
+    <span id="currentModelName">Loading…</span>
+    <span id="modelProviderBadge" class="provider-badge"></span>
+  </div>
+
+  <!-- CHAT AREA -->
+  <div id="chatArea" class="chat-area watermark-none">
+    <div id="chatBgLayer" class="chat-bg-layer"></div>
+    <div id="welcomeScreen" class="welcome-screen">
+      <div class="welcome-avatar">
+        <svg viewBox="0 0 80 80" width="80" height="80"><rect width="80" height="80" rx="20" fill="#0d0d14"/><defs><linearGradient id="wg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#00d4ff"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs><text x="40" y="56" font-size="52" font-family="Arial Black,Arial" fill="url(#wg)" text-anchor="middle" font-weight="900">N</text></svg>
+      </div>
+      <h1 class="welcome-title">NELSON AI</h1>
+      <p class="welcome-sub">Advanced multi-modal AI — text, voice, images &amp; video. By Nelson Company, Uganda.</p>
+      <div class="welcome-chips">
+        <button class="chip" onclick="quickChat('What can you do?')">💥What can you do?</button>
+        <button class="chip" onclick="quickChat('Generate an image of a futuristic African city at sunset')">✨Generate an image</button>
+        <button class="chip" onclick="quickChat('Write a Python web scraper')">✍️ write code</button>
+        <button class="chip" onclick="quickChat('Generate a video of ocean waves')">⚡Generate a video</button>
+        <button class="chip" onclick="quickChat('Tell me about Nelson Company')">💡About Nelson</button>
+        <button class="chip" onclick="quickChat('Give me a 7-day workout plan')">🏋️‍♂️Workout plan</button>
+      </div>
+    </div>
+    <div id="messageContainer" class="message-container"></div>
+  </div>
+
+  <!-- TYPING INDICATOR -->
+  <div id="typingIndicator" class="typing-indicator" style="display:none">
+    <div class="typing-avatar">
+      <svg viewBox="0 0 28 28" width="28" height="28"><rect width="28" height="28" rx="7" fill="#0d0d14"/><defs><linearGradient id="tyg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#00d4ff"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs><text x="14" y="20" font-size="17" font-family="Arial Black,Arial" fill="url(#tyg)" text-anchor="middle" font-weight="900">N</text></svg>
+    </div>
+    <div class="typing-dots"><span></span><span></span><span></span></div>
+    <span id="typingLabel" class="typing-label">NELSON AI is thinking…</span>
+  </div>
+
+  <!-- Scroll to bottom button (fixed overlay) -->
+  <button id="scrollToBottomBtn" class="scroll-to-bottom-btn" onclick="scrollToBottomNow()" title="Jump to latest message" style="display:none">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+
+  <!-- INPUT AREA -->
+  <div class="input-area">
+    <div id="filePreviewBar" class="file-preview-bar" style="display:none"></div>
+    <div class="input-row">
+      <button class="icon-btn input-action-btn" onclick="openFileMenu()" title="Attach">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+      </button>
+      <input type="file" id="fileInputImages" style="display:none" multiple accept="image/*" onchange="handleFileUpload(this)" />
+      <input type="file" id="fileInputFiles" style="display:none" multiple accept=".pdf,.txt,.md,.doc,.docx,.csv,.json,.js,.ts,.jsx,.tsx,.py,.java,.c,.cpp,.cs,.go,.rs,.rb,.php,.html,.css,.yaml,.yml,.sh,.sql" onchange="handleFileUpload(this)" />
+      <div class="textarea-wrapper">
+        <textarea id="messageInput" class="message-input" placeholder="Ask NELSON AI anything…" rows="1" onkeydown="handleKey(event)" oninput="autoResize(this);updateCharCount()"></textarea>
+      </div>
+      <button class="icon-btn input-action-btn" id="voiceTextBtn" onclick="toggleVoiceText()" title="Voice to text">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M19 10a7 7 0 0 1-14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
+      </button>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+    <div class="input-footer">
+      <span id="inputCharCount" class="char-count">0</span>
+      <span class="input-hint">Enter to send · Shift+Enter for newline</span>
+    </div>
+  </div>
+</div>
+
+<!-- FILE MENU POPUP -->
+<div id="fileMenuPopup" class="file-menu-popup hidden">
+  <button class="file-menu-item" onclick="triggerFileInput('fileInputImages')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    Upload Images
+  </button>
+  <button class="file-menu-item" onclick="triggerFileInput('fileInputFiles')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    Upload Files / Code
+  </button>
+</div>
+
+<!-- RECENT CHATS PANEL -->
+<div id="recentChatsPanel" class="recent-chats-panel hidden">
+
+  <!-- HEADER -->
+  <div class="rcp-header">
+    <span class="rcp-title">
+      <div class="rcp-title-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      Recent Chats
+      <span class="rcp-count-badge" id="rcpCountBadge">0</span>
+    </span>
+    <button class="icon-btn" onclick="closeRecentChats()" title="Close">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="rcp-search-row" style="margin:12px 14px 0">
+    <svg class="rcp-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="rcpSearch" placeholder="Search conversations…" oninput="filterRecentChats(this.value)" class="rcp-search-input" />
+  </div>
+
+  <!-- EXPORT / IMPORT -->
+  <div class="rcp-io-row">
+    <button onclick="exportChats()" class="rcp-io-btn export">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export
+    </button>
+    <label class="rcp-io-btn import">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Import
+      <input type="file" accept=".json" onchange="importChats(this)" style="display:none">
+    </label>
+  </div>
+
+  <!-- ONE SCROLLABLE AREA for all chats -->
+  <div class="rcp-scroll-area" id="rcpScrollArea">
+    <div class="rcp-section-label" id="rcpPinnedLabel" style="display:none">📌 Pinned</div>
+    <div id="rcpPinnedList" class="rcp-list"></div>
+    <div class="rcp-section-label" id="rcpAllLabel">All Chats</div>
+    <div id="rcpList" class="rcp-list"></div>
+    <div id="rcpEmpty" class="rcp-empty" style="display:none">
+      <div class="rcp-empty-icon">💬</div>
+      <div class="rcp-empty-title">No chats yet</div>
+      <div class="rcp-empty-sub">Start a conversation and it'll appear here.</div>
+    </div>
+  </div>
+
+</div>
+<div id="rcpScrim" class="rcp-scrim hidden" onclick="closeRecentChats()"></div>
+
+<!-- VOICE CALL OVERLAY -->
+<!-- VOICE CALL OVERLAY -->
+<div id="voiceCallOverlay" class="vc-overlay hidden viz-center" data-vc-theme="dark" data-vstyle="orb">
+  <div class="vc-bg" id="vcBg">
+    <div class="vc-blob b1"></div>
+    <div class="vc-blob b2"></div>
+    <div class="vc-blob b3"></div>
+    <canvas class="vc-particles" id="vcCanvas"></canvas>
+  </div>
+
+  <!-- TOP BAR -->
+  <div class="vc-topbar">
+    <div class="vc-brand-row">
+      <div class="vc-logo-box">
+        <svg viewBox="0 0 44 44" width="38" height="38" style="flex-shrink:0">
+          <rect width="44" height="44" rx="12" fill="#0d0d14"/>
+          <defs><linearGradient id="vcng" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#00d4ff"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs>
+          <text x="22" y="30" font-size="26" font-family="Arial Black,Arial" fill="url(#vcng)" text-anchor="middle" font-weight="900">N</text>
+        </svg>
+      </div>
+      <div>
+        <div class="vc-name">NELSON AI</div>
+        <div class="vc-sub">Voice Assistant</div>
+      </div>
+    </div>
+    <div class="vc-topbar-right">
+      <span class="vc-live-dot"><span></span>LIVE</span>
+      <button class="vc-icon-btn" onclick="openVCSettings()" title="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- STATUS + WAVEFORM -->
+  <div class="vc-status-area">
+    <div id="vcStatus" class="vc-status">Tap the mic to start talking…</div>
+    <div class="vc-waveform-row" id="vcWaveformRow">
+      <div class="vc-wv-bar"></div><div class="vc-wv-bar"></div><div class="vc-wv-bar"></div>
+      <div class="vc-wv-bar"></div><div class="vc-wv-bar"></div><div class="vc-wv-bar"></div>
+      <div class="vc-wv-bar"></div>
+    </div>
+  </div>
+
+  <!-- MAIN VISUALIZER ORB -->
+  <div class="vc-vis-wrap">
+    <div class="vc-orb-scene" id="vcOrbScene">
+      <div class="vc-ring r1"></div>
+      <div class="vc-ring r2"></div>
+      <div class="vc-ring r3"></div>
+      <div class="orb" id="voiceOrb">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round">
+          <rect x="9" y="2" width="6" height="11" rx="3"/>
+          <path d="M19 10a7 7 0 0 1-14 0"/>
+          <line x1="12" y1="19" x2="12" y2="22"/>
+          <line x1="8" y1="22" x2="16" y2="22"/>
+        </svg>
+      </div>
+    </div>
+    <div class="vc-bars-scene hidden" id="vcBarsScene">
+      <div class="vc-bar"></div><div class="vc-bar"></div><div class="vc-bar"></div>
+      <div class="vc-bar"></div><div class="vc-bar"></div><div class="vc-bar"></div>
+      <div class="vc-bar"></div><div class="vc-bar"></div><div class="vc-bar"></div>
+      <div class="vc-bar"></div><div class="vc-bar"></div><div class="vc-bar"></div>
+    </div>
+    <div class="vc-minimal-scene hidden" id="vcMinScene">
+      <div class="vc-min-ring"></div>
+      <div class="vc-min-dot" id="vcMinDot"></div>
+    </div>
+    <div class="vc-wave-scene hidden" id="vcWaveScene">
+      <canvas id="vcWaveCanvas" width="300" height="120"></canvas>
+    </div>
+    <div class="vc-circle-scene hidden" id="vcCircleScene">
+      <canvas id="vcCircleCanvas" width="260" height="260"></canvas>
+    </div>
+  </div>
+
+  <!-- LIVE AI RESPONSE DISPLAY -->
+  <div id="vcLiveResponse" class="vc-live-response hidden">
+    <div class="vc-live-label">
+      <span class="vc-live-dot-pulse"></span>
+      NELSON AI
+    </div>
+    <div id="vcLiveText" class="vc-live-text"></div>
+  </div>
+
+  <!-- LIVE TRANSCRIPT (togglable) -->
+  <div id="vcTranscriptPanel" class="vc-transcript-panel hidden">
+    <div class="vc-transcript-header">
+      <span>Live Messages</span>
+      <button class="vc-transcript-close" onclick="toggleVCTranscript()">✕</button>
+    </div>
+    <div id="vcTranscriptList" class="vc-transcript-list"></div>
+  </div>
+
+  <!-- KEYBOARD INPUT (togglable) -->
+  <div id="vcKeyboardPanel" class="vc-keyboard-panel hidden">
+    <div class="vc-kb-row">
+      <textarea id="vcKeyboardInput" class="vc-kb-input" placeholder="Type your message…" rows="2"></textarea>
+      <button class="vc-kb-send" onclick="sendVCKeyboardMessage()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- TOOLBAR: Keyboard / History / Clear -->
+  <!-- SPEED CONTROL STRIP -->
+  <div class="vc-speed-strip">
+    <span class="vc-speed-label">Speed</span>
+    <div class="vc-speed-opts" id="vcSpeedBtns">
+      <button class="vc-spd-btn" onclick="setVCSpeedInline(0.7,this)">0.7×</button>
+      <button class="vc-spd-btn" onclick="setVCSpeedInline(0.85,this)">0.85×</button>
+      <button class="vc-spd-btn active" onclick="setVCSpeedInline(1.0,this)">1×</button>
+      <button class="vc-spd-btn" onclick="setVCSpeedInline(1.25,this)">1.25×</button>
+      <button class="vc-spd-btn" onclick="setVCSpeedInline(1.5,this)">1.5×</button>
+      <button class="vc-spd-btn" onclick="setVCSpeedInline(1.75,this)">1.75×</button>
+      <button class="vc-spd-btn" onclick="setVCSpeedInline(2.0,this)">2×</button>
+    </div>
+  </div>
+
+  <div class="vc-toolbar">
+    <button class="vc-tool-btn" id="vcKbBtn" onclick="toggleVCKeyboard()" title="Keyboard">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="6" y2="10"/><line x1="10" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="14" y2="10"/><line x1="18" y1="10" x2="18" y2="10"/><line x1="6" y1="14" x2="6" y2="14"/><line x1="18" y1="14" x2="18" y2="14"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+      <span>Keyboard</span>
+    </button>
+    <button class="vc-tool-btn" onclick="toggleVCTranscript()" title="History">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>History</span>
+    </button>
+    <button class="vc-tool-btn" onclick="clearVCHistory()" title="Clear Chat">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+      <span>Clear Chat</span>
+    </button>
+  </div>
+
+  <!-- BOTTOM CONTROLS: Stop AI | Ask Anything (mic) | End -->
+  <div class="vc-controls">
+    <button class="vc-ctrl-btn" id="vcInterruptBtn" onclick="interruptAI()" title="Stop AI speaking">
+      <div class="vc-ctrl-icon-box stop-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><rect x="4" y="4" width="16" height="16" rx="3"/></svg>
+      </div>
+      <span>Stop AI</span>
+    </button>
+    <button class="vc-mic-main" id="vcMicBtn" onclick="toggleVCMic()">
+      <div class="vc-mic-inner">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M19 10a7 7 0 0 1-14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
+        <span class="vc-mic-label">Ask Anything</span>
+      </div>
+    </button>
+    <button class="vc-ctrl-btn hang-btn" onclick="closeVoiceCall()" title="End call">
+      <div class="vc-ctrl-icon-box hang-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#ef4444"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1-.22 1.1.4 2.3.6 3.6.6.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1H7c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.22 1L6.6 10.8z"/></svg>
+      </div>
+      <span>End</span>
+    </button>
+  </div>
+
+  <div class="vc-hint">Speak naturally — NELSON AI listens and replies</div>
+
+  <!-- VC SETTINGS PANEL -->
+  <div class="vc-settings-panel" id="vcSettingsPanel">
+    <div class="vc-settings-drag"></div>
+    <div class="vc-settings-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Voice Chat Settings
+    </div>
+    <div class="vc-sgroup">
+      <div class="vc-slabel">AI Voice (tap to preview)</div>
+      <div id="vcVoicePreviewList" class="vc-voice-preview-list">
+        <div class="vpl-loading">Loading voices…</div>
+      </div>
+    </div>
+    <div class="vc-sgroup">
+      <div class="vc-slabel">Speech Speed</div>
+      <div class="vc-sopts" id="vcSpeedOpts">
+        <button class="vc-sopt" onclick="setVCSpeed(0.8,this)">Slow</button>
+        <button class="vc-sopt active" onclick="setVCSpeed(1.0,this)">Normal</button>
+        <button class="vc-sopt" onclick="setVCSpeed(1.3,this)">Fast</button>
+      </div>
+    </div>
+    <div class="vc-sgroup">
+      <div class="vc-slabel">Visualizer Position</div>
+      <div class="vc-sopts" id="vcPositionOpts">
+        <button class="vc-sopt active" onclick="setVCVisualizerPosition('center',this)">Center</button>
+        <button class="vc-sopt" onclick="setVCVisualizerPosition('top',this)">Top</button>
+      </div>
+    </div>
+    <div class="vc-sgroup">
+      <div class="vc-slabel">Live Response Display</div>
+      <div class="vc-sopts" id="vcLiveRespOpts">
+        <button class="vc-sopt active" onclick="setVCLiveDisplay(true,this)">Show</button>
+        <button class="vc-sopt" onclick="setVCLiveDisplay(false,this)">Hide</button>
+      </div>
+    </div>
+    <div class="vc-sgroup">
+      <div class="vc-slabel">Visualizer</div>
+      <div class="vc-sopts" id="vcStyleOpts">
+        <button class="vc-sopt active" onclick="setVCStyle('orb',this)">Orb</button>
+        <button class="vc-sopt" onclick="setVCStyle('bars',this)">Bars</button>
+        <button class="vc-sopt" onclick="setVCStyle('minimal',this)">Minimal</button>
+        <button class="vc-sopt" onclick="setVCStyle('wave',this)">Wave</button>
+        <button class="vc-sopt" onclick="setVCStyle('circle',this)">Circle</button>
+      </div>
+    </div>
+    <div class="vc-sgroup">
+      <div class="vc-slabel">Background Theme</div>
+      <div class="vc-theme-grid" id="vcThemeGrid">
+        <button class="vc-theme-btn active" data-vc-theme="dark" onclick="setVCTheme('dark',this)"><span class="tp tp-dark"></span><span>Dark</span></button>
+        <button class="vc-theme-btn" data-vc-theme="ocean" onclick="setVCTheme('ocean',this)"><span class="tp tp-ocean"></span><span>Ocean</span></button>
+        <button class="vc-theme-btn" data-vc-theme="galaxy" onclick="setVCTheme('galaxy',this)"><span class="tp tp-galaxy"></span><span>Galaxy</span></button>
+        <button class="vc-theme-btn" data-vc-theme="matrix" onclick="setVCTheme('matrix',this)"><span class="tp tp-matrix"></span><span>Matrix</span></button>
+        <button class="vc-theme-btn" data-vc-theme="sunset" onclick="setVCTheme('sunset',this)"><span class="tp tp-sunset"></span><span>Sunset</span></button>
+        <button class="vc-theme-btn" data-vc-theme="aurora" onclick="setVCTheme('aurora',this)"><span class="tp tp-aurora"></span><span>Aurora</span></button>
+        <button class="vc-theme-btn" data-vc-theme="fire" onclick="setVCTheme('fire',this)"><span class="tp tp-fire"></span><span>Fire</span></button>
+        <button class="vc-theme-btn" data-vc-theme="neon" onclick="setVCTheme('neon',this)"><span class="tp tp-neon"></span><span>Neon</span></button>
+      </div>
+    </div>
+    <button class="vc-settings-done" onclick="closeVCSettings()">Done ✓</button>
+  </div>
+  <div class="vc-settings-scrim hidden" id="vcSettingsScrim" onclick="closeVCSettings()"></div>
+</div>
+
+<!-- INFO MODAL -->
+<div id="infoModal" class="info-modal" onclick="closeInfoModal(event)">
+  <div class="info-modal-box">
+    <button class="modal-close-btn" onclick="document.getElementById('infoModal').style.display='none'">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="infoModalContent"></div>
+  </div>
+</div>
+
+<!-- IMAGE LIGHTBOX -->
+<div id="imageLightbox" class="image-lightbox" onclick="closeLightbox(event)">
+  <div class="lightbox-inner" onclick="event.stopPropagation()">
+    <img id="lightboxImg" src="" alt="" />
+    <div class="lightbox-actions">
+      <a id="lightboxDl" href="#" download="nelson-ai-image.png" class="lbtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download
+      </a>
+      <button onclick="document.getElementById('imageLightbox').style.display='none'" class="lbtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESPONSE STYLE MODAL -->
+<div id="responseStyleModal" class="info-modal" onclick="closeRSModal(event)">
+  <div class="info-modal-box" onclick="event.stopPropagation()" style="max-width:360px">
+    <button class="modal-close-btn" onclick="closeRSModal()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <h3 style="margin-bottom:16px;font-size:16px;font-weight:700">Change Response Style</h3>
+    <div class="rs-options">
+      <button class="rs-opt" onclick="applyResponseStyle('default')">Default</button>
+      <button class="rs-opt" onclick="applyResponseStyle('bullet')">Bullet points</button>
+      <button class="rs-opt" onclick="applyResponseStyle('numbered')">Numbered list</button>
+      <button class="rs-opt" onclick="applyResponseStyle('short')">Shorter response</button>
+      <button class="rs-opt" onclick="applyResponseStyle('detailed')">More detailed</button>
+      <button class="rs-opt" onclick="applyResponseStyle('casual')">Casual tone</button>
+      <button class="rs-opt" onclick="applyResponseStyle('formal')">Formal tone</button>
+      <button class="rs-opt" onclick="applyResponseStyle('simple')">Simple language</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <script src="nelson-app.js"></script>
+  <!-- nelson-skills.js not included in this build -->
+
+<!-- ADVANCED SETTINGS MODAL -->
+<div id="advancedSettingsModal" class="adv-modal hidden">
+  <div class="adv-modal-box">
+    <div class="adv-modal-header">
+      <div>
+        <div class="adv-modal-title">Settings</div>
+        <div class="adv-modal-subtitle">Advanced settings</div>
+      </div>
+      <button class="icon-btn" onclick="closeAdvancedSettings()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="adv-tabs">
+      <button class="adv-tab active" onclick="switchAdvTab('general',this)">General</button>
+      <button class="adv-tab" onclick="switchAdvTab('voice',this)">Voice</button>
+      <button class="adv-tab" onclick="switchAdvTab('code',this)">Code</button>
+      <button class="adv-tab" onclick="switchAdvTab('account',this)">Account</button>
+      <button class="adv-tab" onclick="switchAdvTab('about',this)">About</button>
+    </div>
+    <!-- GENERAL TAB -->
+    <div class="adv-tab-content active" id="advTab-general">
+      <div class="adv-section-title">General</div>
+      <div class="adv-row">
+        <div class="adv-row-label">
+          <div class="adv-row-name">Send on Enter</div>
+          <div class="adv-row-desc">Press Enter to send messages (Shift+Enter for new line)</div>
+        </div>
+        <label class="adv-toggle">
+          <input type="checkbox" id="advSendOnEnter" checked onchange="savAdvSetting('sendOnEnter',this.checked)" />
+          <span class="adv-toggle-slider"></span>
+        </label>
+      </div>
+      <div class="adv-row">
+        <div class="adv-row-label">
+          <div class="adv-row-name">Auto Read Responses</div>
+          <div class="adv-row-desc">Automatically read AI responses aloud when received</div>
+        </div>
+        <label class="adv-toggle">
+          <input type="checkbox" id="advAutoRead" onchange="savAdvSetting('autoRead',this.checked)" />
+          <span class="adv-toggle-slider"></span>
+        </label>
+      </div>
+      <div class="adv-row">
+        <div class="adv-row-label">
+          <div class="adv-row-name">Stream Responses</div>
+          <div class="adv-row-desc">Show AI responses word-by-word as they arrive</div>
+        </div>
+        <label class="adv-toggle">
+          <input type="checkbox" id="advStreamResponse" checked onchange="savAdvSetting('streamResponse',this.checked)" />
+          <span class="adv-toggle-slider"></span>
+        </label>
+      </div>
+      <!-- AGENTIC MODE -->
+      <div class="agentic-toggle-row">
+        <div class="agentic-toggle-label">
+          <div class="adv-row-name">
+            Agentic Mode
+            <span class="agentic-badge">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              MULTI-AGENT
+            </span>
+          </div>
+          <div class="agentic-pipeline-info">Three Nelson AI modules cooperate on every response: Reasoner plans, Coder builds, General refines — producing a single unified answer.</div>
+          <div class="agentic-flow" id="agenticFlowViz">
+            <div class="agentic-flow-agent">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Reasoner
+            </div>
+            <span class="agentic-flow-arrow">→</span>
+            <div class="agentic-flow-agent">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Coder
+            </div>
+            <span class="agentic-flow-arrow">→</span>
+            <div class="agentic-flow-agent">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              General
+            </div>
+            <span class="agentic-flow-arrow">→</span>
+            <div class="agentic-flow-agent" style="border-color:rgba(0,212,255,0.4);color:var(--accent)">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Answer
+            </div>
+          </div>
+        </div>
+        <label class="adv-toggle" style="margin-left:12px;flex-shrink:0">
+          <input type="checkbox" id="advAgenticMode" onchange="savAdvSetting('agenticMode',this.checked)" />
+          <span class="adv-toggle-slider"></span>
+        </label>
+      </div>
+      <!-- Groq API Key for Agentic Mode -->
+      <div class="adv-row" style="flex-direction:column;align-items:flex-start;gap:8px;margin-top:4px;background:rgba(74,222,128,0.05);border:1px solid rgba(74,222,128,0.2);border-radius:10px;padding:12px">
+        <div style="display:flex;align-items:center;gap:8px;width:100%">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <div class="adv-row-name" style="color:#4ade80;font-weight:700">Groq API Key <span style="font-weight:400;color:#94a3b8;font-size:10px">(FREE — 14,400 req/day)</span></div>
+        </div>
+        <div class="adv-row-desc" style="font-size:11px;color:#94a3b8;line-height:1.5">✅ Groq key is built-in — agentic mode uses Groq automatically. 14,400 free requests/day, no credit card needed.</div>
+        <div id="groqKeyStatus" style="font-size:11px;color:#4ade80">✅ Groq key active — agentic mode enabled</div>
+      </div>
+    </div>
+    <!-- VOICE TAB -->
+    <div class="adv-tab-content" id="advTab-voice">
+      <div class="adv-section-title">TTS Engine</div>
+      <div class="adv-voice-info" style="margin-bottom:10px">Built-in device voices work on all devices with no account needed. Premium engines need a free account — tap to set up.</div>
+
+      <!-- TTS Engine Cards -->
+      <div id="ttsEngineList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+
+        <!-- Built-in (default) -->
+        <div class="tts-engine-card active" id="ttsCard-browser" onclick="selectTTSEngine('browser')">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(0,212,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 8v4l3 3"/></svg>
+            </div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px;color:#e2e8f0">Built-in Device TTS <span style="font-size:10px;background:rgba(0,212,255,0.2);color:#00d4ff;padding:2px 6px;border-radius:4px;margin-left:4px;">DEFAULT ✓</span></div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">Works on all devices, no account, no internet needed</div>
+            </div>
+            <div id="ttsCheck-browser" style="color:#00d4ff;font-size:18px;">●</div>
+          </div>
+        </div>
+
+        <!-- AWS Polly via Puter -->
+        <div class="tts-engine-card" id="ttsCard-polly" onclick="promptTTSSignup('polly')">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,153,0,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff9900" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px;color:#e2e8f0">AWS Polly Neural <span style="font-size:10px;background:rgba(255,153,0,0.2);color:#ff9900;padding:2px 6px;border-radius:4px;margin-left:4px;">via Puter</span></div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">Premium natural voices — requires free Puter account</div>
+            </div>
+            <div id="ttsCheck-polly" style="color:#475569;font-size:18px;">○</div>
+          </div>
+        </div>
+
+        <!-- ElevenLabs -->
+        <div class="tts-engine-card" id="ttsCard-elevenlabs" onclick="promptTTSSignup('elevenlabs')">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            </div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px;color:#e2e8f0">ElevenLabs <span style="font-size:10px;background:rgba(139,92,246,0.2);color:#8b5cf6;padding:2px 6px;border-radius:4px;margin-left:4px;">Ultra Realistic</span></div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">Most human-like voices — requires ElevenLabs API key</div>
+            </div>
+            <div id="ttsCheck-elevenlabs" style="color:#475569;font-size:18px;">○</div>
+          </div>
+        </div>
+
+        <!-- Kokoro -->
+        <div class="tts-engine-card" id="ttsCard-kokoro" onclick="promptTTSSignup('kokoro')">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(74,222,128,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            </div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px;color:#e2e8f0">Kokoro TTS <span style="font-size:10px;background:rgba(74,222,128,0.2);color:#4ade80;padding:2px 6px;border-radius:4px;margin-left:4px;">Offline AI</span></div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px">Offline AI voices — works without internet after setup</div>
+            </div>
+            <div id="ttsCheck-kokoro" style="color:#475569;font-size:18px;">○</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TTS Signup Prompt Modal (inside voice tab) -->
+      <div id="ttsSignupPrompt" style="display:none;background:rgba(15,15,25,0.98);border:1px solid rgba(0,212,255,0.3);border-radius:14px;padding:18px;margin-bottom:16px;">
+        <div id="ttsPromptTitle" style="font-weight:700;font-size:14px;color:#e2e8f0;margin-bottom:6px"></div>
+        <div id="ttsPromptDesc" style="font-size:12px;color:#94a3b8;line-height:1.6;margin-bottom:12px"></div>
+        <div id="ttsPromptVideo" style="margin-bottom:12px;display:none">
+          <div style="font-size:11px;color:#00d4ff;margin-bottom:4px">📺 Setup guide:</div>
+          <a id="ttsVideoLink" href="#" target="_blank" style="font-size:11px;color:#60a5fa;text-decoration:underline;word-break:break-all;"></a>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button id="ttsSignupBtn" onclick="goToTTSSignup()" style="flex:1;padding:10px;background:linear-gradient(135deg,#00d4ff,#7c3aed);border:none;border-radius:8px;color:#fff;font-weight:700;font-size:12px;cursor:pointer;">Sign In / Get API Key</button>
+          <button onclick="dismissTTSPrompt()" style="flex:1;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#94a3b8;font-size:12px;cursor:pointer;">Keep Built-in TTS</button>
+        </div>
+      </div>
+
+      <div class="adv-section-title" style="margin-top:4px">Voice Selection</div>
+      <div class="adv-voice-info">Tap a voice to select it. Press ▶ to preview.</div>
+      <div id="advVoiceList" class="adv-voice-list"></div>
+      <div class="adv-section-title" style="margin-top:16px">Offline & Device Voices</div>
+      <div class="adv-voice-info">Kokoro and device voices work without internet.</div>
+      <div id="advBrowserVoiceList" class="adv-voice-list"></div>
+      <div class="adv-section-title" style="margin-top:16px">Voice Settings</div>
+      <div class="adv-row">
+        <div class="adv-row-label"><div class="adv-row-name">Pitch</div></div>
+        <div class="adv-slider-wrap">
+          <input type="range" min="0.5" max="2" step="0.05" id="advPitch" oninput="setPitch(this.value)" />
+          <span id="advPitchVal">1.0</span>
+        </div>
+      </div>
+      <div class="adv-row">
+        <div class="adv-row-label"><div class="adv-row-name">Speed</div></div>
+        <div class="adv-slider-wrap">
+          <input type="range" min="0.5" max="2" step="0.05" id="advRate" oninput="setRate(this.value)" />
+          <span id="advRateVal">1.0</span>
+        </div>
+      </div>
+    </div>
+    <!-- CODE TAB -->
+    <div class="adv-tab-content" id="advTab-code">
+      <div class="adv-section-title">Code Display</div>
+      <div class="adv-row">
+        <div class="adv-row-label">
+          <div class="adv-row-name">No Code Limits</div>
+          <div class="adv-row-desc">Long code blocks show in expandable fullscreen view</div>
+        </div>
+        <label class="adv-toggle">
+          <input type="checkbox" id="advNoCodeLimits" checked onchange="savAdvSetting('noCodeLimits',this.checked)" />
+          <span class="adv-toggle-slider"></span>
+        </label>
+      </div>
+      <div class="adv-section-title" style="margin-top:16px">Syntax Theme</div>
+      <select id="advCodeTheme" class="adv-select" onchange="setCodeTheme(this.value)">
+        <option value="atom-one-dark">Atom One Dark</option>
+        <option value="github-dark">GitHub Dark</option>
+        <option value="monokai">Monokai</option>
+        <option value="dracula">Dracula</option>
+        <option value="night-owl">Night Owl</option>
+      </select>
+    </div>
+    <!-- ACCOUNT TAB -->
+    <div class="adv-tab-content" id="advTab-account">
+      <div class="adv-section-title">Account</div>
+      <div class="adv-profile-row">
+        <!-- Tappable avatar for photo upload -->
+        <div class="adv-profile-avatar" id="advProfileAvatar" onclick="document.getElementById('profilePhotoInput').click()" title="Tap to change photo" style="cursor:pointer;position:relative;overflow:hidden;">
+          U
+          <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);font-size:8px;text-align:center;padding:2px;color:#fff;">EDIT</div>
+        </div>
+        <input type="file" id="profilePhotoInput" accept="image/*" style="display:none" onchange="handleProfilePhotoChange(event)" />
+        <div class="adv-profile-info">
+          <div class="adv-profile-name" id="advProfileName">User</div>
+          <div class="adv-profile-email" id="advProfileEmail">user@email.com</div>
+          <div id="advLoginBadge" style="font-size:10px;margin-top:3px;color:#00d4ff;"></div>
+        </div>
+      </div>
+
+      <div class="adv-section-title" style="margin-top:16px">Edit Profile</div>
+      <div class="adv-field">
+        <label class="adv-field-label">Display Name</label>
+        <input type="text" id="advEditName" class="adv-text-input" placeholder="Your Name" />
+      </div>
+      <div class="adv-field">
+        <label class="adv-field-label">Email</label>
+        <input type="email" id="advEditEmail" class="adv-text-input" placeholder="your@email.com" />
+      </div>
+      <button class="adv-save-btn" onclick="saveAccountChanges()">Save Changes</button>
+
+      <div class="adv-divider"></div>
+
+      <!-- Manage Account -->
+      <div class="adv-section-title">Manage Account</div>
+      <button class="adv-save-btn" id="switchAccountBtn" onclick="handleSwitchAccount()" style="background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);color:#00d4ff;margin-bottom:10px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Switch Account
+      </button>
+      <button class="adv-signout-btn" onclick="handleLogout()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </button>
+    </div>
+    <!-- ABOUT TAB -->
+    <div class="adv-tab-content" id="advTab-about">
+      <div class="adv-about-founder">
+        <div class="adv-founder-photo">
+          <img src="nelson-founder.png" alt="Nelson" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="adv-founder-fallback" style="display:none">N</div>
+        </div>
+        <div class="adv-founder-name">Nelson</div>
+        <div class="adv-founder-title">Founder &amp; CEO, Nelson Company 🇺🇬</div>
+      </div>
+      <div class="adv-section-title">ABOUT NELSON AI</div>
+      <p class="adv-about-text">NELSON AI is an intelligent assistant built by Nelson Company in Uganda. It combines the power of multiple AI models to give you the best experience.</p>
+      <p class="adv-about-text">Built with ❤️ for everyone.</p>
+      <div class="adv-section-title" style="margin-top:16px">VERSION</div>
+      <div class="adv-version-row"><span>NELSON AI</span><span>v3.0</span></div>
+      <div class="adv-version-row"><span>Build</span><span>2026</span></div>
+      <div class="adv-version-row"><span>Creator</span><span>Nelson Vigorous</span></div>
+      <div class="adv-version-row"><span>Location</span><span>Kireka, Uganda 🇺🇬</span></div>
+    </div>
+  </div>
+</div>
+<div id="advModalScrim" class="adv-modal-scrim hidden" onclick="closeAdvancedSettings()"></div>
+
+</body>
+</html>
